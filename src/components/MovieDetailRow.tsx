@@ -2,14 +2,19 @@ import {
   Box,
   Button,
   Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   TableCell,
   TableRow,
 } from "@mui/material";
 import IMovie from "../interfaces/IMovie";
+import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import ProwlarrApi from "../services/prowlarr-api";
 import ITorrent from "../interfaces/ITorrent";
+import { isValidInput } from "../services/helper";
 
 interface MovieDetailRowProps {
   movie: IMovie;
@@ -25,10 +30,11 @@ const MovieDetailRow = (props: MovieDetailRowProps) => {
 
   useEffect(() => {
     const getTorrents = async () => {
-      //const torrents = await prowlarrApi.search(query);
+      if (!isValidInput(query)) return;
+      const torrents = await prowlarrApi.search(query);
 
-      //setTorrents(torrents);
-      //setIsDialogOpen(true);
+      setTorrents(torrents);
+      setIsDialogOpen(true);
     };
     getTorrents();
   }, [query]);
@@ -41,7 +47,13 @@ const MovieDetailRow = (props: MovieDetailRowProps) => {
         <TableCell>
           {!movie.torrent && (
             <>
-              <Button onClick={() => {}} size="small" variant="contained">
+              <Button
+                onClick={() => {
+                  setQuery(movie.searchString);
+                }}
+                size="small"
+                variant="contained"
+              >
                 <SearchIcon></SearchIcon> Search
               </Button>
             </>
@@ -50,9 +62,17 @@ const MovieDetailRow = (props: MovieDetailRowProps) => {
         </TableCell>
       </TableRow>
       <Dialog open={isDialogOpen}>
-        {torrents?.map((t) => (
-          <Box key={t.guid}>{t.title}</Box>
-        ))}
+        <DialogTitle>
+          Torrent Results
+          <IconButton aria-label="close" onClick={() => setIsDialogOpen(false)}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {torrents?.map((t) => (
+            <Box key={t.guid}>{t.title}</Box>
+          ))}
+        </DialogContent>
       </Dialog>
     </>
   );
