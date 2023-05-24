@@ -24,20 +24,16 @@ const prowlarrApi: ProwlarrApi = new ProwlarrApi();
 
 const MovieDetailRow = (props: MovieDetailRowProps) => {
   const { movie } = props;
-  const [query, setQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [torrents, setTorrents] = useState<ITorrent[]>();
 
-  useEffect(() => {
-    const getTorrents = async () => {
-      if (!isValidInput(query)) return;
-      const torrents = await prowlarrApi.search(query);
+  const getTorrents = async (query: string) => {
+    if (!isValidInput(query)) return;
+    const torrents = await prowlarrApi.search(query);
 
-      setTorrents(torrents);
-      setIsDialogOpen(true);
-    };
-    getTorrents();
-  }, [query]);
+    setTorrents(torrents);
+    setIsDialogOpen(true);
+  };
 
   return (
     <>
@@ -49,7 +45,7 @@ const MovieDetailRow = (props: MovieDetailRowProps) => {
             <>
               <Button
                 onClick={() => {
-                  setQuery(movie.searchString);
+                  getTorrents(movie.searchString);
                 }}
                 size="small"
                 variant="contained"
