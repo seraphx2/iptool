@@ -12,33 +12,36 @@ const Container = styled(Box)(() => ({
 }));
 
 const App = () => {
-  const {storage, setStorage} = useContext(ApplicationContext);
+  const { storage, setStorage } = useContext(ApplicationContext);
 
   useEffect(() => {
     console.log("localStorage update triggered");
     localStorage.setItem("torrentData", JSON.stringify(storage));
   }, [storage]);
 
-  const updateMovieList = async () => {
-    const radarrMovies = (await radarrApi.movies()).filter(
-      (x) => !x.hasFile && x.digitalRelease
-    );
-    console.log(radarrMovies);
-
-    const currentStorage: ILocalStorage = JSON.parse(
-      localStorage.getItem("torrentData") || "{}"
-    );
-    console.log(currentStorage);
-
-    const newMovieData = processMovieData(currentStorage.movies, radarrMovies);
-    currentStorage.movies = newMovieData;
-
-    setStorage(currentStorage);
-  };
-
   useLayoutEffect(() => {
+    const updateMovieList = async () => {
+      const radarrMovies = (await radarrApi.movies()).filter(
+        (x) => !x.hasFile && x.digitalRelease
+      );
+      console.log(radarrMovies);
+
+      const currentStorage: ILocalStorage = JSON.parse(
+        localStorage.getItem("torrentData") || "{}"
+      );
+      console.log(currentStorage);
+
+      const newMovieData = processMovieData(
+        currentStorage.movies,
+        radarrMovies
+      );
+      currentStorage.movies = newMovieData;
+
+      setStorage(currentStorage);
+    };
+
     updateMovieList();
-  }, []);
+  }, [setStorage]);
 
   return (
     <Container>

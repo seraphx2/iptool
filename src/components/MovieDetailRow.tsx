@@ -28,12 +28,8 @@ const MovieDetailRow = (props: MovieDetailRowProps) => {
   const [torrents, setTorrents] = useState<ITorrent[]>();
 
   const getTorrents = async (query: string) => {
-    //if (!isValidInput(query)) return;
-
     setIsDialogOpen(true);
-
     const torrents = await prowlarrApi.search(query);
-
     setTorrents(torrents);
   };
 

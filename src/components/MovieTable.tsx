@@ -6,16 +6,9 @@ import {
   TableRow,
 } from "@mui/material";
 import MovieDetailRow from "./MovieDetailRow";
-import MovieTorrent from "../interfaces/IMovie";
 import { ApplicationContext } from "../contexts/ApplicationContext";
 import { useContext } from 'react';
 
-
-// interface MovieTableProps {
-//   movies: MovieTorrent[];
-// }
-
-//const MovieTable = (props: MovieTableProps) => {
 const MovieTable = () => {
   const { storage } = useContext(ApplicationContext);
 
