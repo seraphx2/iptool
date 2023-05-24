@@ -11,10 +11,10 @@ import {
 import IMovie from "../interfaces/IMovie";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProwlarrApi from "../services/prowlarr-api";
 import ITorrent from "../interfaces/ITorrent";
-import { isValidInput } from "../services/helper";
+import CircularProgress from "@mui/material/CircularProgress";
 
 interface MovieDetailRowProps {
   movie: IMovie;
@@ -28,11 +28,13 @@ const MovieDetailRow = (props: MovieDetailRowProps) => {
   const [torrents, setTorrents] = useState<ITorrent[]>();
 
   const getTorrents = async (query: string) => {
-    if (!isValidInput(query)) return;
+    //if (!isValidInput(query)) return;
+
+    setIsDialogOpen(true);
+
     const torrents = await prowlarrApi.search(query);
 
     setTorrents(torrents);
-    setIsDialogOpen(true);
   };
 
   return (
@@ -57,17 +59,32 @@ const MovieDetailRow = (props: MovieDetailRowProps) => {
           {movie.torrent && <>test</>}
         </TableCell>
       </TableRow>
-      <Dialog open={isDialogOpen}>
-        <DialogTitle>
+      <Dialog fullScreen open={isDialogOpen}>
+        <DialogTitle
+          sx={{
+            display: "flex !important",
+            justifyContent: "space-between !important",
+          }}
+        >
           Torrent Results
-          <IconButton aria-label="close" onClick={() => setIsDialogOpen(false)}>
+          <IconButton
+            onClick={() => {
+              setIsDialogOpen(false);
+              setTorrents([]);
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          {torrents?.map((t) => (
-            <Box key={t.guid}>{t.title}</Box>
-          ))}
+          {!torrents && (
+            <Box sx={{ justifyContent: "center", width: "100%" }}>
+              <CircularProgress></CircularProgress>
+            </Box>
+          )}
+          {torrents?.length === 0 && <div>No Results</div>}
+          {torrents &&
+            torrents?.map((t, i) => <Box key={`${i}-t.guid`}>{t.title}</Box>)}
         </DialogContent>
       </Dialog>
     </>

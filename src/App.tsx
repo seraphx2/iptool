@@ -1,9 +1,10 @@
 import { Box, TableContainer, styled } from "@mui/material";
 import RadarrApi from "./services/radarr-api";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import processMovieData from "./services/movie-processor";
 import ILocalStorage from "./interfaces/ILocalStorage";
 import MovieTable from "./components/MovieTable";
+import { ApplicationContext } from "./contexts/ApplicationContext";
 
 const radarrApi: RadarrApi = new RadarrApi();
 const Container = styled(Box)(() => ({
@@ -11,11 +12,7 @@ const Container = styled(Box)(() => ({
 }));
 
 const App = () => {
-  const [storage, setStorage] = useState<ILocalStorage>({
-    download: 0,
-    upload: 0,
-    movies: [],
-  });
+  const {storage, setStorage} = useContext(ApplicationContext);
 
   useEffect(() => {
     console.log("localStorage update triggered");
@@ -50,7 +47,7 @@ const App = () => {
         <span>Loading data ...</span>
       ) : (
         <TableContainer sx={{ border: "1px solid #d3d3d3" }}>
-          <MovieTable movies={storage.movies}></MovieTable>
+          <MovieTable></MovieTable>
         </TableContainer>
       )}
     </Container>
