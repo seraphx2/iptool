@@ -1,10 +1,11 @@
 import { Box, TableContainer, styled } from "@mui/material";
 import RadarrApi from "./services/radarr-api";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect } from "react";
 import processMovieData from "./services/movie-processor";
 import ILocalStorage from "./interfaces/ILocalStorage";
 import MovieTable from "./components/MovieTable";
 import { ApplicationContext } from "./contexts/ApplicationContext";
+import { saveLocalStorage } from "./services/helper";
 
 const radarrApi: RadarrApi = new RadarrApi();
 const Container = styled(Box)(() => ({
@@ -14,11 +15,6 @@ const Container = styled(Box)(() => ({
 const App = () => {
   const { storage, setStorage } = useContext(ApplicationContext);
 
-  useEffect(() => {
-    console.log("localStorage update triggered");
-    localStorage.setItem("torrentData", JSON.stringify(storage));
-  }, [storage]);
-
   useLayoutEffect(() => {
     const updateMovieList = async () => {
       const radarrMovies = (await radarrApi.movies()).filter(
@@ -26,18 +22,20 @@ const App = () => {
       );
       console.log(radarrMovies);
 
-      const currentStorage: ILocalStorage = JSON.parse(
-        localStorage.getItem("torrentData") || "{}"
+      const tempStorage: ILocalStorage = JSON.parse(
+        localStorage.getItem("torrentData") || JSON.stringify({
+          download: 0,
+          upload: 0,
+          movies: [],
+        })
       );
-      console.log(currentStorage);
+      console.log(tempStorage);
 
-      const newMovieData = processMovieData(
-        currentStorage.movies,
-        radarrMovies
-      );
-      currentStorage.movies = newMovieData;
+      const newMovieData = processMovieData(tempStorage?.movies, radarrMovies);
+      tempStorage.movies = newMovieData;
 
-      setStorage(currentStorage);
+      setStorage(tempStorage);
+      saveLocalStorage("torrentData", tempStorage);
     };
 
     updateMovieList();

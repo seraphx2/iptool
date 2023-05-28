@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import MovieDetailRow from "./MovieDetailRow";
 import { ApplicationContext } from "../contexts/ApplicationContext";
-import { useContext } from 'react';
+import { useContext } from "react";
 
 const MovieTable = () => {
   const { storage } = useContext(ApplicationContext);
@@ -24,8 +24,12 @@ const MovieTable = () => {
       <TableBody>
         {storage?.movies
           .filter((m) => m.isActive)
-          .map((movie) => (
-            <MovieDetailRow key={movie.tmdbId} movie={movie}></MovieDetailRow>
+          .map((m, i) => (
+            <MovieDetailRow
+              key={`${i}-${m.tmdbId}`}
+              movieIndex={i}
+              movie={m}
+            ></MovieDetailRow>
           ))}
       </TableBody>
     </Table>
